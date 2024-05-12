@@ -47,10 +47,15 @@ def extract_code(args):
         "loop": LoopData
     }
 
+    # data_path = {
+    #     "solid": SOLID_FULL_PATH,
+    #     "profile": PROFILE_FULL_PATH,
+    #     "loop": LOOP_FULL_PATH
+    # }
     data_path = {
-        "solid": SOLID_FULL_PATH,
-        "profile": PROFILE_FULL_PATH,
-        "loop": LOOP_FULL_PATH
+        "solid": SOLID_TEST_PATH,
+        "profile": PROFILE_TEST_PATH,
+        "loop": LOOP_TEST_PATH
     }
 
     dataset = data_func[args.format](data_path[args.format])
@@ -92,7 +97,7 @@ def extract_code(args):
         code_dict['content'][uid] = code_unq
     
     print(f'[Done] {np.max(codes_unique)+1} Codes Extracted')
-    with open(args.checkpoint.split('/')[-1]+'.pkl', "wb") as tf:
+    with open(args.checkpoint.split('/')[-1]+'_test.pkl', "wb") as tf:
         pickle.dump(code_dict, tf)
 
 

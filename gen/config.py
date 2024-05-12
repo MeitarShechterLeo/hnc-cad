@@ -21,6 +21,9 @@ CODE_PAD = 4
 UNCOND_TRAIN_EPOCH = 350
 COND_TRAIN_EPOCH = 250
 CAD_TRAIN_PATH = 'data/model/train_deduplicate.pkl'
+CAD_VAL_PATH = 'data/model/val.pkl'
+CAD_TEST_PATH = 'data/model/test.pkl'
+PC_PATH = 'data/../pc_cad'
 ENCODER_CONFIG = {
     'hidden_dim': 512,
     'embed_dim': 256,  
@@ -53,7 +56,7 @@ code_top_p_sample = 0.98
 code_top_p_eval = 1.0 
 cad_top_p_sample = 0.5  # nucleus sampling has better visual quality
 cad_top_p_eval = 1.0 # simply sample based on the distribution
-RANDOM_SAMPLE_TOTAL = 1000  # visualize 1000 randomly generated samples
-RANDOM_SAMPLE_BS = 32     
+RANDOM_SAMPLE_TOTAL = 10 # 1000  # visualize 1000 randomly generated samples
+RANDOM_SAMPLE_BS = 10 # 32     
 RANDOM_EVAL_TOTAL = 15000 # need more generated data for evaluation purpose
 RANDOM_EVAL_BS = 1024  

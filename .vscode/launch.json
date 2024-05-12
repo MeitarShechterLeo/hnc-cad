@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "cad_img",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/meitars/Code/hnc-cad/gen/cad_img.py",
+            "console": "integratedTerminal",
+            "args": ["--input_dir", "result/random_sample", "--output_dir", "result/random_sample"]
+        },
+        {
+            "name": "train_full",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/meitars/Code/hnc-cad/gen/train_full.py",
+            "console": "integratedTerminal",
+            "args": ["--output", "proj_log/gen_full", "--batchsize", "32", "--mode", "cond", "--device", "0",
+            "--solid_code", "pretrained/solid.pkl", "--profile_code", "pretrained/profile.pkl", "--loop_code", "pretrained/loop.pkl"]
+        },
+        {
+            "name": "train_full_pc_encoder",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/meitars/Code/hnc-cad/gen/train_full_pc_encoder.py",
+            "console": "integratedTerminal",
+            // "args": ["--output", "proj_log/gen_full_pc_encoder", "--batchsize", "64", "--mode", "cond", "--device", "0",
+            "args": ["--output", "proj_log/gen_full_pc_only_encoder", "--batchsize", "64", "--mode", "cond", "--device", "0",
+            "--solid_code", "pretrained/solid.pkl", "--profile_code", "pretrained/profile.pkl", "--loop_code", "pretrained/loop.pkl",
+            "--weight", "proj_log/gen_full"]
+            // "--code_weight", "pretrained/gen_code", "--cad_weight", "pretrained/gen_cad"]
+        },
+        {
+            "name": "convert",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/meitars/Code/hnc-cad/gen/convert.py",
+            "console": "integratedTerminal",
+            "args": ["--data_folder", "result/ac_pc_encoder"]
+        },
+    ]
+}

@@ -1,12 +1,13 @@
 import os 
 from pathlib import Path
-import os
 import numpy as np 
-from pathlib import Path
 import math 
 import pdb 
+import random
 from collections import OrderedDict
 from config import * 
+
+from plyfile import PlyData, PlyElement
 
 
 def dequantize(verts, n_bits=6, min_range=-1, max_range=1):
@@ -365,3 +366,36 @@ def write_obj_sample(save_folder, data):
             fh.write("\n")
             fh.write('T_zaxis '+z_axis)
             fh.write("\n")
+
+def load_pointcloud_from_ply(file_path: str, with_normal: bool=False) -> np.ndarray:
+    """
+    Loads the pointcloud from a given .ply file.
+
+    Args:
+        file_path (str): path to .ply file.
+        with_normal (bool): whether to return the normals as well.
+        
+    Returns:
+        numpy.ndarray: the pointcloud.
+    """
+    ply_data = PlyData.read(file_path)
+    vertex_data = ply_data['vertex']
+    pointcloud = np.stack([vertex_data['x'], vertex_data['y'], vertex_data['z']]).T
+
+    if with_normal:
+        normals = np.stack([vertex_data['nx'], vertex_data['ny'], vertex_data['nz']]).T
+        pointcloud = np.concatenate([pointcloud, normals], axis=1)
+
+    return pointcloud
+
+def write_ply(points, filename, text=False):
+    """ input: Nx3, write points to filename as PLY format. """
+    points = [(points[i,0], points[i,1], points[i,2]) for i in range(points.shape[0])]
+    vertex = np.array(points, dtype=[('x', 'f4'), ('y', 'f4'),('z', 'f4')])
+    el = PlyElement.describe(vertex, 'vertex', comments=['vertices'])
+    with open(filename, mode='wb') as f:
+        PlyData([el], text=text).write(f)
+
+def downsample_pc(points, n):
+    sample_idx = random.sample(list(range(points.shape[0])), n)
+    return points[sample_idx]

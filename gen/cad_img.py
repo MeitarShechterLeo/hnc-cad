@@ -10,8 +10,77 @@ from glob import glob
 import pathlib
 from tqdm import tqdm
 
+import subprocess
+import os
+from contextlib import contextmanager
+from OCC.Display.SimpleGui import init_display
+
+viewer = None
+
+
+@contextmanager
+def use_xvfb():
+    """
+    Context manager to start and stop a virtual X server (Xvfb) for headless operation.
+    """
+    xvfb_process = None
+    if not is_display_active(":1"):
+        xvfb_process = subprocess.Popen("Xvfb :1 -screen 0 1024x768x16", shell=True)
+    os.environ["DISPLAY"] = ":1"
+    try:
+        yield
+    finally:
+        if xvfb_process is not None:
+            xvfb_process.terminate()
+
+def is_display_active(display):
+    """
+    Check if a X server display is active.
+
+    Args:
+        display (str): The display identifier.
+
+    Returns:
+        bool: True if the display is active, False otherwise.
+    """
+    # Set the DISPLAY environment variable to the specified display
+    os.environ['DISPLAY'] = display
+
+    try:
+        # Run xdpyinfo and ignore its output
+        subprocess.run(['xdpyinfo'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except subprocess.CalledProcessError:
+        # xdpyinfo failed, meaning the display is not active or accessible
+        return False
+
+def initialize_display():
+    """
+    Initialize a display with specific settings.
+
+    Returns:
+        Display: The initialized display.
+    """
+    display, _, _, _ = init_display(backend_str="tk", size=(1024, 768), display_triedron=False, background_gradient_color1=[206, 215, 222], background_gradient_color2=[128,128,128])
+    return display
+
 
 def render(shape, filename, width=1024, height=768, face_color_rgb=(0.2, 0.2, 0.2), edge_color_rgb=(0, 0, 0), show_face_boundary=True):
+    # # global viewer
+    # # if not is_display_active(":1"):
+    # #     subprocess.Popen("Xvfb :1 -screen 0 1024x768x16", shell=True)
+    # os.environ["DISPLAY"] = ":1"
+    # # if viewer is None:
+    # viewer = initialize_display()
+
+    # # display.DisplayShape(shape)
+    # # display.FitAll()
+    # # display.View.Dump(str(out_dir / name))
+    # # display.EraseAll()
+
+    # print('initizalized display')
+
+
     viewer = Viewer3d()
     viewer.Create(phong_shading=True, create_default_lights=True)
     viewer.set_bg_gradient_color([255, 255, 255], [255, 255, 255])
@@ -63,6 +132,7 @@ def main():
     if not output_path.exists():
         output_path.mkdir(parents=True, exist_ok=True)
 
+    # with use_xvfb():
     for fn in tqdm(files):
         shape = read_step_file(str(fn))
         render(shape, output_path.joinpath(fn.stem + ".png"), args.width, args.height)

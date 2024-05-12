@@ -106,6 +106,7 @@ def run_parallel(project_folder):
             extrude_idx += 1
         
         except Exception as ex:
+            print(ex)
             msg = [project_folder, str(ex)[:100]]
             return None 
  
@@ -118,8 +119,10 @@ def run_parallel(project_folder):
         step_name = Path(output_folder).stem + '_'+ str(extrude_idx).zfill(3) + "_final.step"
         output_path =  os.path.join(output_folder, step_name)
         write_step_file(cur_solid, output_path)
+        print('done ' + output_path)
 
     except Exception as ex:
+        print(ex)
         msg = [project_folder, str(ex)[:500]]
         return None 
 
@@ -132,9 +135,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     solids = []
-    cad_folders = sorted(glob(args.data_folder+'/*/'))
+    # cad_folders = sorted(glob(args.data_folder+'/*/'))
+    cad_folders = sorted(glob(args.data_folder+'/*/*/'))
 
     num_cpus = multiprocessing.cpu_count()
     convert_iter = multiprocessing.Pool(num_cpus).imap(run_parallel, cad_folders) 
     for solid in tqdm(convert_iter, total=len(cad_folders)):
         pass
+    # for folder in cad_folders:
+    #     run_parallel(folder)
