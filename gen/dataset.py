@@ -514,6 +514,28 @@ class CodeData(torch.utils.data.Dataset):
 #######
 #######
 #######
+test_sample = ["0000_00008841", 
+               "0000_00004596", 
+               "0000_00003166",
+               "0000_00005082",
+               "0000_00005083",
+               "0000_00005144",
+               "0000_00005418",
+               "0000_00007186",
+               "0000_00009254",
+               "0001_00010397",
+               "0001_00015962",
+               "0000_00000093",
+               "0000_00001926",
+               "0000_00003390",
+               "0000_00006004",
+               "0000_00006584",
+               "0000_00006588",
+               "0000_00007648",
+               "0001_00012015",
+               "0001_00013532",
+               "0001_00014933",
+               "0001_00015721"]
 
 class CADPCData(CADData):
     """ CAD dataset """
@@ -544,6 +566,9 @@ class CADPCData(CADData):
         self.data = []
         print("Loading dataset...")
         for cad in tqdm(cad_data):
+            # #### Temp filtering for test sample
+            # if '_'.join(cad['name'].split('/')) not in test_sample: continue
+            # ####
             # PC
             curr_pc_path = os.path.join(pc_path, cad['name'] + '.ply')
             if not os.path.exists(curr_pc_path):

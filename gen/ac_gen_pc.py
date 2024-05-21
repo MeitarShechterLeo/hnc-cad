@@ -66,7 +66,7 @@ def sample(args):
     for pc, _, _, _, _, _, _, _, name in dataloader:
         name = name[0]
         print('starting sample: ', name)
-        if count>16:break # only visualize the first 50 examples
+        if count>30:break # only visualize the first 50 examples
         pc = pc.cuda()
 
         # encode PC of CAD model

@@ -47,22 +47,30 @@ def extract_code(args):
         "loop": LoopData
     }
 
-    # data_path = {
-    #     "solid": SOLID_FULL_PATH,
-    #     "profile": PROFILE_FULL_PATH,
-    #     "loop": LOOP_FULL_PATH
-    # }
-    data_path = {
+    train_data_path = {
+        "solid": SOLID_FULL_PATH,
+        "profile": PROFILE_FULL_PATH,
+        "loop": LOOP_FULL_PATH
+    }
+    test_data_path = {
         "solid": SOLID_TEST_PATH,
         "profile": PROFILE_TEST_PATH,
         "loop": LOOP_TEST_PATH
     }
+    val_data_path = {
+        "solid": SOLID_VAL_PATH,
+        "profile": PROFILE_VAL_PATH,
+        "loop": LOOP_VAL_PATH
+    }
 
-    dataset = data_func[args.format](data_path[args.format])
-    dataloader = torch.utils.data.DataLoader(dataset, 
-                                             shuffle=False, 
-                                             batch_size=1024,
-                                             num_workers=6)
+    dataloaders = []
+    for data_path in [train_data_path, test_data_path, val_data_path]:
+        dataset = data_func[args.format](data_path[args.format])
+        dataloader = torch.utils.data.DataLoader(dataset, 
+                                                shuffle=False, 
+                                                batch_size=1024,
+                                                num_workers=6)
+        dataloaders.append(dataloader)
     
     # Load model weights
     enc_func = {
@@ -79,13 +87,14 @@ def extract_code(args):
     print('Extracting Codes...')
     codes = []
     uid = []
-    for param, seq_mask, _, cad_uid in dataloader:
-        param = param.cuda()
-        seq_mask = seq_mask.cuda()
-        _, _, _, code = encoder(param, seq_mask)
-        code_index = torch.argmax(code.transpose(0,1), 2).detach().cpu().numpy()
-        codes.append(code_index)
-        uid.append(cad_uid)
+    for dataloader in dataloaders:
+        for param, seq_mask, _, cad_uid in dataloader:
+            param = param.cuda()
+            seq_mask = seq_mask.cuda()
+            _, _, _, code = encoder(param, seq_mask)
+            code_index = torch.argmax(code.transpose(0,1), 2).detach().cpu().numpy()
+            codes.append(code_index)
+            uid.append(cad_uid)
     uid = np.hstack(uid)
     codes = np.vstack(codes)  
     codes_unique = get_unique_code(codes, is_numpy=True) 
@@ -97,7 +106,7 @@ def extract_code(args):
         code_dict['content'][uid] = code_unq
     
     print(f'[Done] {np.max(codes_unique)+1} Codes Extracted')
-    with open(args.checkpoint.split('/')[-1]+'_test.pkl', "wb") as tf:
+    with open(args.checkpoint.split('/')[-1]+'_all.pkl', "wb") as tf:
         pickle.dump(code_dict, tf)
 
 
