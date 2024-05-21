@@ -2,11 +2,11 @@ import os
 import sys
 import numpy as np
 
-from geometry.arc import Arc
-from geometry.circle import Circle
-from geometry.line import Line
+from gen.geometry.arc import Arc
+from gen.geometry.circle import Circle
+from gen.geometry.line import Line
 
-from geometry import geom_utils
+from gen.geometry import geom_utils
 import pdb
 
 
@@ -150,6 +150,64 @@ class OBJParser:
             # Normalized object 
             if scale is not None:
                 fh.write('Scale '+str(scale))
+
+
+
+    def parse_file_faces(self, cad, scale=1.0):
+        """ 
+        Parse obj file
+        Return
+            vertex 2D location numpy
+            curve list (geometry class)
+            extrude parameters
+        """ 
+        vertex_lines = cad['vertex'].split('\n')
+        curve_lines = cad['curve'].split('\n')
+        extrude_info = cad['extrude']
+
+        if extrude_info['op'] == 1: #'add'
+            set_op = 'NewBodyFeatureOperation'
+        elif extrude_info['op'] == 2: #'cut'
+            set_op = 'CutFeatureOperation'
+        elif extrude_info['op'] == 3: #'cut'
+            set_op = 'IntersectFeatureOperation'
+
+        meta_info = {
+            'extrude_value': extrude_info['value'],
+            'set_op': set_op,
+            't_orig': extrude_info['T'] * 1., #  extrude_info['S']
+            't_x': extrude_info['R'][0:3],
+            't_y': extrude_info['R'][3:6],
+            't_z': extrude_info['R'][6:9],
+        }
+
+        # Parse file 
+        vertex_list = []
+        
+        # Read vertice
+        for line in vertex_lines:
+            tokens = line.split()
+            if not tokens:
+                continue
+            line_type = tokens[0]
+            # Vertex
+            if line_type == "v":
+                vertex_list.append([float(x) for x in tokens[1:]])
+        vertices = np.array(vertex_list, dtype=np.float64) * scale
+
+        # Parse all lines
+        faces = []
+        for str_idx, line in enumerate(curve_lines):
+            tokens = line.split()
+            if not tokens:
+                continue
+            line_type = tokens[0]
+
+            # Start of a new face 
+            if line_type == "face":
+                faces.append(self.read_face(curve_lines, str_idx+1, vertices))
+
+        return faces, meta_info    
 
 
     def parse_file(self, scale=1.0):

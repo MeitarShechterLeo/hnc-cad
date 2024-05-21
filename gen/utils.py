@@ -5,7 +5,7 @@ import math
 import pdb 
 import random
 from collections import OrderedDict
-from config import * 
+from gen.config import * 
 
 from plyfile import PlyData, PlyElement
 
@@ -164,7 +164,7 @@ class CADparser:
                 face_str = "face\n"
                 face = face[:-1]
                 loops = np.split(face, np.where(face[:,0]==3)[0]+1)
-                assert len(loops[-1]) == 0
+                assert len(loops[-1]) == 0, 'face doesnt contain a "3" token which is EOS I think.'
                 loops = loops[:-1]
                
                 # Each loop
@@ -221,6 +221,9 @@ class CADparser:
             cur_str.append(f"c {center_idx} {radius_idx}")
 
         elif len(curve) == 2: # Arc
+            if len(next_curve) == 0:
+                print('Warning: next_curve is empty')
+                return 
             start_v = dequantize(curve[0], n_bits=self.bit, min_range=-SKETCH_R, max_range=SKETCH_R)*_scale_+_center_
             mid_v = dequantize(curve[1], n_bits=self.bit, min_range=-SKETCH_R, max_range=SKETCH_R)*_scale_+_center_
             end_v = dequantize(next_curve[0], n_bits=self.bit, min_range=-SKETCH_R, max_range=SKETCH_R)*_scale_+_center_
@@ -232,6 +235,9 @@ class CADparser:
             cur_str.append(f"a {start_idx} {mid_idx} {center_idx} {end_idx}")
 
         elif len(curve) == 1: # Line
+            if len(next_curve) == 0:
+                print('Warning: next_curve is empty')
+                return 
             start_v = dequantize(curve[0], n_bits=self.bit, min_range=-SKETCH_R, max_range=SKETCH_R)*_scale_+_center_
             end_v = dequantize(next_curve[0], n_bits=self.bit, min_range=-SKETCH_R, max_range=SKETCH_R)*_scale_+_center_
             start_idx = self.save_vertex(start_v[0], start_v[1], 'p')
@@ -239,7 +245,9 @@ class CADparser:
             cur_str.append(f"l {start_idx} {end_idx}")
 
         else:
-            assert False
+            print('Warning: got an invalid curve, len(curve) = ', len(curve))
+            return
+            # assert False
                                             
 
     def save_vertex(self, h_x, h_y, text):

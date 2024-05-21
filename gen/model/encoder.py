@@ -3,8 +3,8 @@ import torch
 import torch.nn.functional as F
 from .layers.transformer import *
 from .layers.improved_transformer import *
-from config import *
-from model.network import *
+from gen.config import *
+from gen.model.network import *
 
 from typing import Optional, Tuple, List
 

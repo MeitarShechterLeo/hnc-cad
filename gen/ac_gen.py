@@ -1,13 +1,13 @@
 import os
 import torch
 import argparse
-from config import *
+from gen.config import *
 from hashlib import sha256
 import numpy as np 
-from dataset import CADData
-from utils import CADparser, write_obj_sample
-from model.encoder import SketchEncoder, ExtEncoder
-from model.decoder import SketchDecoder, ExtDecoder, CodeDecoder
+from gen.dataset import CADData
+from gen.utils import CADparser, write_obj_sample
+from gen.model.encoder import SketchEncoder, ExtEncoder
+from gen.model.decoder import SketchDecoder, ExtDecoder, CodeDecoder
 
 
 def raster_cad(coord, ext): 

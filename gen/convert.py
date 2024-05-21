@@ -4,9 +4,9 @@ from pathlib import Path
 from tqdm import tqdm
 import multiprocessing
 from glob import glob 
-from converter import OBJReconverter
+from gen.converter import OBJReconverter
 from OCC.Core.BRepCheck import BRepCheck_Analyzer
-from geometry.obj_parser import OBJParser
+from gen.geometry.obj_parser import OBJParser
 from OCC.Extend.DataExchange import write_step_file 
 from OCC.Core.StlAPI import StlAPI_Writer
 from OCC.Core.BRepMesh import BRepMesh_IncrementalMesh

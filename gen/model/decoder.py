@@ -3,8 +3,8 @@ from .layers.improved_transformer import *
 import torch.nn as nn
 import torch
 import numpy as np
-from config import *
-from model.network import *
+from gen.config import *
+from gen.model.network import *
 import torch.nn as nn
 
 class SketchDecoder(nn.Module):
@@ -26,7 +26,8 @@ class SketchDecoder(nn.Module):
       self.mempos_embed = PositionalEncoding(max_len=MAX_CODE, d_model=self.embed_dim)
     else:
       self.code_embed = Embedder(num_code+CODE_PAD, self.embed_dim)
-      self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      # self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EMBEDDING, d_model=self.embed_dim)
 
     layers = TransformerDecoderLayerImproved(d_model=self.embed_dim, nhead=DECODER_CONFIG['num_heads'], 
         dim_feedforward=DECODER_CONFIG['hidden_dim'], dropout=DECODER_CONFIG['dropout_rate'])
@@ -197,7 +198,8 @@ class ExtDecoder(nn.Module):
       self.mempos_embed = PositionalEncoding(max_len=MAX_CODE, d_model=self.embed_dim)
     else:
       self.code_embed = Embedder(num_code+CODE_PAD, self.embed_dim)
-      self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      # self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      self.mempos_embed = PositionalEncoding(max_len=MAX_CODE+MAX_EMBEDDING, d_model=self.embed_dim)
 
     self.logit = nn.Linear(self.embed_dim, 2**CAD_BIT+EXT_PAD)
    
@@ -313,7 +315,8 @@ class CodeDecoder(nn.Module):
                           dim_feedforward= CODE_CONFIG['hidden_dim'],
                           nhead=CODE_CONFIG['num_heads'], dropout=self.dropout)
     else:
-      self.mempos_embed = PositionalEncoding(max_len=MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      # self.mempos_embed = PositionalEncoding(max_len=MAX_EXT+MAX_CAD, d_model=self.embed_dim)
+      self.mempos_embed = PositionalEncoding(max_len=MAX_EMBEDDING, d_model=self.embed_dim)
       decoder_layers = TransformerDecoderLayerImproved(d_model=self.embed_dim,   # with cross attention, cond AR
                           dim_feedforward= CODE_CONFIG['hidden_dim'],
                           nhead=CODE_CONFIG['num_heads'], dropout=self.dropout)

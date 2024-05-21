@@ -18,7 +18,7 @@ from OCC.Core.GProp import GProp_GProps
 from OCC.Core.ShapeFix import ShapeFix_Face, ShapeFix_Wire
 from OCC.Core.gp import (gp_Vec, gp_Ax2, gp_Dir, gp_Circ)
 from OCC.Extend.DataExchange import write_stl_file
-from utils import write_obj
+from gen.utils import write_obj
 
 
 def round_float(point):
@@ -42,9 +42,9 @@ def same_plane(plane1, plane2):
 
 def create_xyz(xyz):
     return gp_XYZ(
-        xyz["x"],
-        xyz["y"],
-        xyz["z"]
+        float(xyz["x"]),
+        float(xyz["y"]),
+        float(xyz["z"])
     )
 
 
@@ -797,7 +797,7 @@ class OBJReconverter:
             
 
     def build_body(self, face, normal, value):
-        extrusion_vec = gp_Vec(normal).Multiplied(value)
+        extrusion_vec = gp_Vec(normal).Multiplied(float(value))
         make_prism = BRepPrimAPI_MakePrism(face, extrusion_vec)
         make_prism.Build()
         prism = make_prism.Prism()
@@ -912,6 +912,8 @@ class OBJReconverter:
         # Loop through all the curves in one loop
         for profile_curve in profile_loop:
             curve_edge, curve_string = self.parse_curve(profile_curve, transform)
+            if curve_edge == -1: # we have a point not a curve
+                continue
             topo_wire.Add(curve_edge)
             if not topo_wire.IsDone():
                 raise Exception("wire builder not done")
@@ -943,7 +945,9 @@ class OBJReconverter:
         start = create_point(line["start_point"], transform)
         end = create_point(line["end_point"], transform)
         if start.Distance(end)==0:
-            raise Exception("start/end point same location")
+            print("start/end point same location, throwing away the line")
+            return -1, None
+            # raise Exception("start/end point same location")
         topo_edge = BRepBuilderAPI_MakeEdge(start, end)
 
         # Save pre-transform 

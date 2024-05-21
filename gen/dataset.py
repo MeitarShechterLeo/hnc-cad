@@ -1,12 +1,11 @@
 import torch
 import numpy as np
 import pickle 
-from config import * 
+from gen.config import * 
 from tqdm import tqdm
 import random 
 import os
-from utils import load_pointcloud_from_ply, downsample_pc
-
+from gen.utils import load_pointcloud_from_ply, downsample_pc
 
 class CADData(torch.utils.data.Dataset):
     """ CAD dataset """

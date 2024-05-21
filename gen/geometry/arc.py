@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from geometry.curve import Curve
+from gen.geometry.curve import Curve
 
 
 class Arc(Curve):

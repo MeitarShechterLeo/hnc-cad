@@ -1,5 +1,5 @@
 import numpy as np
-from geometry.curve import Curve
+from gen.geometry.curve import Curve
 
 class Line(Curve):
     def __init__(self, point_indices, point_data, is_outer):

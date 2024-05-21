@@ -1,5 +1,5 @@
 import numpy as np
-from geometry.curve import Curve
+from gen.geometry.curve import Curve
 import pdb
 
 class Circle(Curve):

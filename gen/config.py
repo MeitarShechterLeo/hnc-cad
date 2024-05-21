@@ -11,6 +11,7 @@ BBOX_RANGE = 1
 CUBOID_RANGE = 1
 MAX_CAD = 200
 MAX_CODE = 35
+MAX_EMBEDDING = 513
 SKETCH_PAD = 5
 EXT_PAD = 2
 CODE_PAD = 4
@@ -26,21 +27,21 @@ CAD_TEST_PATH = 'data/model/test.pkl'
 PC_PATH = 'data/../pc_cad'
 ENCODER_CONFIG = {
     'hidden_dim': 512,
-    'embed_dim': 256,  
+    'embed_dim': 1024, # 256
     'num_layers': 6,   
     'num_heads': 8,
     'dropout_rate': 0.1
 }
 DECODER_CONFIG = {
     'hidden_dim': 512,
-    'embed_dim': 256,  
+    'embed_dim': 1024, #256
     'num_layers': 6,   
     'num_heads': 8,
     'dropout_rate': 0.1
 }
 CODE_CONFIG = {
     'hidden_dim': 512,
-    'embed_dim': 256,  
+    'embed_dim': 1024, # 256
     'num_layers': 6,   
     'num_heads': 8,
     'dropout_rate': 0.1
